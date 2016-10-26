@@ -1,0 +1,7 @@
+		Bebidas
+Elija bebida:
+
+1-Pepsi		$18
+2-Levite	$20
+3-Coca-cola	$18
+4-Sprite	$18

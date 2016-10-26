@@ -1,0 +1,7 @@
+		Menu Principal
+Elija opcion:
+
+1-Menú del día		4-Bebidas
+2-Menú estudiantil 	5-Postres
+3-Platos		6-Ensaladas
+

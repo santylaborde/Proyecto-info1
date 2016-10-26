@@ -1,0 +1,5 @@
+		Ensaladas
+Elija ensalada:
+
+1-Ensalada (Lechuga,tomate,cebolla)	$30
+2-Ensalada de lo que sea		$45
