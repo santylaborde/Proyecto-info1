@@ -24,7 +24,7 @@ int main(void)
   scanf("%s",user);
   printf("clave:");
   scanf("%s",pass);
-  i=login(user,h,pass);
+  i=login(user,pass,h);
   if(i==0)
     printf("Bienvenido\n");
   else

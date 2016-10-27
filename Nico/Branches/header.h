@@ -11,4 +11,4 @@ typedef struct Alumno
   struct Alumno *next;
 }ALUMNO;
 
-int login(char *,ALUMNO *,char *);
+int login(char *,char *,ALUMNO *);
