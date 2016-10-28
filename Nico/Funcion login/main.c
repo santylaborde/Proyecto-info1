@@ -1,7 +1,7 @@
 #include "header.h"
 int main(void)
 {
-  ALUMNO *aux, *h=NULL, *last;
+  ALUMNO *aux, *h='\0', *last;
   char user[TAM];
   char pass[TAM];
   int i;
@@ -13,8 +13,8 @@ int main(void)
     scanf("%s",aux->nombre);
     printf("ingrese clave:");
     scanf("%s",aux->clave);
-    aux->next=NULL;
-    if(h==NULL)
+    aux->next='\0';
+    if(h=='\0')
       h=aux;
     else
       last->next=aux;

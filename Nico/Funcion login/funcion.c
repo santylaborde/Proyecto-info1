@@ -2,7 +2,7 @@
 int login(char *user, char *pass, ALUMNO *h)
 {
   ALUMNO *a;
-  while(h!=NULL)
+  while(h!='\0')
   {
      if(!strcmp(h->nombre,user))
      {
