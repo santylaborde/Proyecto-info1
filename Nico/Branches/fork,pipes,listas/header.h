@@ -7,4 +7,17 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#define TAM 1024
+
+typedef struct pedido
+{
+  char *pedido;
+  int precio;
+  char *usuario;
+  struct pedido *next;
+}PEDIDO;
+
+void listen_buffet(int *);
+void tostruct(char *,PEDIDO *);
+
 
