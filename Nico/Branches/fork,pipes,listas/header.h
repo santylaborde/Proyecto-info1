@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 #define TAM 1024
 
@@ -19,5 +20,6 @@ typedef struct pedido
 
 void listen_buffet(int *);
 void tostruct(char *,PEDIDO *);
-
+void addlist(PEDIDO *, PEDIDO *);
+void fail (int);
 

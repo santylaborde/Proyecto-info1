@@ -1,23 +1,28 @@
 #include "header.h"
 int main(void)
 {
-  int fd[2];
-  FILE *fp;
+  int fd[2];//,fp;
+  //FILE *fp;
+  PEDIDO *p='\0', *aux;
   char buffer[TAM];
-  if(pipe(fd)==-1)
-  {
-    fp=fopen("errorpipe.log","w+");
-    fprintf(fp,stderr);
-    fclose(fp);
-  }
+  
+  fail(pipe(fd));
+  
   if(!fork())
-  { //proceso hijo
+  { 
+    //proceso hijo
     listen_buffet(fd);
   }
   //proceso padre
-  close(fd[1);
-  if(read(fd[0],buffer,TAM)!=-1)
+  close(fd[1]);
+  while(1)
   {
-    
+    if(read(fd[0],buffer,TAM)!=-1)
+    {
+      buffer[strlen(buffer)]='\0';
+      aux=(PEDIDO *)buffer;
+      addlist(aux,p);
+      printf("%s\n%d\n%s\n",aux->pedido,aux->precio,aux->usuario);
+    }
   }
 }
