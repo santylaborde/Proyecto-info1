@@ -1,71 +1,82 @@
 #include "flista.h"
+
 /*guarda el principio y fin de una lista*/
-void inicializacion (Lista *lista)
+void inicializacion (ListaI *lista)
 {
   lista->inicio = NULL;
   lista->fin = NULL;
   lista->TAM = 0;
 }
-/* agrega en una lista vacia */
-int elemento_en_lista_vacia(Lista * lista, char *dato)
-{
-  Producto *nuevo_producto;
-  if ((nuevo_producto = (Producto *) malloc (sizeof (Producto))) == NULL)
-    return -1;
-  if ((nuevo_producto->Mercaderia = (char *) malloc (50 * sizeof (char)))
-      == NULL)
-    return -1;
-  strcpy (nuevo_producto->Mercaderia, dato);
-  nuevo_producto->siguiente = NULL;
-  lista->inicio = nuevo_producto;
-  lista->fin = nuevo_producto;
-  lista->TAM++;
-  return 0;
-}
 
 /* visualizacion de la lista */
-void visualizacion (Lista * lista){
+void visualizacion (ListaI * lista){
   Producto *actual;
   actual = lista->inicio;
-  while (actual != NULL){
+  while (actual != NULL)
+  {
       printf ("%s\n",actual->Mercaderia);
+      printf ("%d\n",actual->precio);
+      printf ("%d\n",actual->id);
       actual = actual->siguiente;
-  }
+      }
 }
 
 /* agrega al inicio de la lista */
-int agregar_inicio_lista (Lista * lista, char *dato){
+int nodo_inicio(ListaI * lista, char *dato,int precio,int id){
   Producto *nuevo_producto;
   if ((nuevo_producto = (Producto *) malloc (sizeof (Producto))) == NULL)
     return -1;
-  if ((nuevo_producto->Mercaderia = (char *) malloc (50 * sizeof (char)))
-      == NULL)
+  if ((nuevo_producto->Mercaderia = (char *) malloc (sizeof (dato))) == NULL)
     return -1;
-  strcpy (nuevo_producto->Mercaderia, dato);
-  nuevo_producto->siguiente = lista->inicio;
-  lista->inicio = nuevo_producto;
-  lista->TAM++;
+  nuevo_producto->precio=precio;
+  nuevo_producto->id=id;
+    if(lista->TAM == 0)
+    {
+        strcpy (nuevo_producto->Mercaderia, dato);
+        nuevo_producto->siguiente = NULL;
+        lista->inicio = nuevo_producto;
+        lista->fin = nuevo_producto;
+        lista->TAM++;
+    }
+    else
+    {
+        strcpy (nuevo_producto->Mercaderia, dato);
+        nuevo_producto->siguiente = lista->inicio;
+        lista->inicio = nuevo_producto;
+        lista->TAM++;
+    } 
   return 0;
 }
 
 /*agrega al final de la lista */
-int agregar_fin_lista (Lista * lista, Producto * actual, char *dato){
+int nodo_final(ListaI * lista, Producto * actual, char *dato){
   Producto *nuevo_producto;
   if ((nuevo_producto = (Producto *) malloc (sizeof (Producto))) == NULL)
     return -1;
-  if ((nuevo_producto->Mercaderia = (char *) malloc (50 * sizeof (char)))
+  if ((nuevo_producto->Mercaderia = (char *) malloc (sizeof (dato)))
       == NULL)
     return -1;
-  strcpy (nuevo_producto->Mercaderia, dato);
-  actual->siguiente = nuevo_producto;
-  nuevo_producto->siguiente = NULL;
-  lista->fin = nuevo_producto;
-  lista->TAM++;
+      if(lista->TAM == 0)
+    {
+        strcpy (nuevo_producto->Mercaderia, dato);
+        nuevo_producto->siguiente = NULL;
+        lista->inicio = nuevo_producto;
+        lista->fin = nuevo_producto;
+        lista->TAM++;
+    }
+    else
+    {
+        strcpy (nuevo_producto->Mercaderia, dato);
+        actual->siguiente = nuevo_producto;
+        nuevo_producto->siguiente = NULL;
+        lista->fin = nuevo_producto;
+        lista->TAM++;
+    }
   return 0;
 }
 
 /* eliminacion al inicio de la lista */
-int eliminar_inicio (Lista * lista){
+int eliminar_inicio (ListaI * lista){
   if (lista->TAM == 0)
     return -1;
   Producto *sup_Producto;
@@ -80,7 +91,7 @@ int eliminar_inicio (Lista * lista){
 }
 
 /* agrega en la posicion solicitada */
-int agregar_elemento_posicion (Lista * lista, char *dato, int pos)
+int agregar_elemento_posicion (ListaI * lista, char *dato, int pos)
 {
   if (lista->TAM < 2)
     return -1;
@@ -107,7 +118,7 @@ int agregar_elemento_posicion (Lista * lista, char *dato, int pos)
 }
 
 /* eliminar un Producto despues de la posicion solicitada */
-int eliminar_elemento_posicion (Lista * lista, int pos){
+int eliminar_elemento_posicion (ListaI * lista, int pos){
   if (lista->TAM <= 1 || pos < 1 || pos >= lista->TAM)
     return -1;
   int i;
@@ -127,30 +138,60 @@ int eliminar_elemento_posicion (Lista * lista, int pos){
 }
 
 /* destruir la lista */
-void destruir (Lista *lista){
+void destruir (ListaI *lista){
   while (lista->TAM > 0)
     eliminar_inicio (lista);
 }
+///------------------lista de listas
 
-/*crea e inicializa el menu*/
-int new_menu (struct ListaMenu  *Menu)
+/*guarda el principio y fin de una lista*/
+void inicializacionLista (ListaDeL *lista)
 {
-    if((Menu->Bebidas = (Lista *) malloc (sizeof(Lista))) == NULL)
+  lista->inicio = NULL;
+  lista->fin = NULL;
+  lista->TAM = 0;
+}
+///----------------------------------
+int new_menu(ListaDeL *lista){
+    if ((lista= (ListaDeL *) malloc (sizeof (ListaDeL))) == NULL)
     return -1;
-    inicializacion (Menu->Bebidas);
-    if((Menu->Postres = (Lista *) malloc (sizeof(Lista))) == NULL)
+    inicializacionLista (lista);
+    return 0;
+    }
+//----------------
+int lista_inicio(ListaDeL * lista, char *dato){
+   Lista *nuevo_lista;
+  if ((nuevo_lista = (Lista *) malloc (sizeof (Lista))) == NULL)
     return -1;
-    inicializacion (Menu->Postres);
-    if((Menu->Ensaladas = (Lista *) malloc (sizeof(Lista))) == NULL)
-    return -1; 
-    inicializacion (Menu->Ensaladas);
-    if((Menu->MenuEst = (Lista *) malloc (sizeof(Lista))) == NULL)
+  if ((nuevo_lista->Nombre= (char *) malloc (sizeof (dato))) == NULL)
     return -1;
-    inicializacion (Menu->MenuEst);
-    if((Menu->MenuDia = (Lista *) malloc (sizeof(Lista))) == NULL)
+  if ((nuevo_lista->ListaMenu= (ListaI *) malloc (sizeof (ListaI))) == NULL)
     return -1;
-    inicializacion (Menu->MenuDia);
-    if((Menu->Buffer = (char *) malloc (50 * sizeof(char)))== NULL)
-    return -1;
-return 0;
+  inicializacion (nuevo_lista->ListaMenu);
+    if(lista->TAM == 0)
+    {
+        strcpy (nuevo_lista->Nombre, dato);
+        nuevo_lista->siguiente = NULL;
+        lista->inicio = nuevo_lista;
+        lista->fin = nuevo_lista;
+        lista->TAM++;
+    }
+    else
+    {
+        strcpy (nuevo_lista->Nombre, dato);
+        nuevo_lista->siguiente = lista->inicio;
+        lista->inicio = nuevo_lista;
+        lista->TAM++;
+    } 
+  return 0;
+}
+/* visualizacion de la lista */
+void visualizacionLista (ListaDeL * lista){
+  Lista *actual;
+  actual = lista->inicio;
+  while (actual != NULL)
+  {
+      printf ("%s\n",actual->Nombre);
+      actual = actual->siguiente;
+      }
 }
