@@ -17,12 +17,10 @@ int main(void)
   close(fd[1]);
   while(1)
   {
-    if(read(fd[0],buffer,TAM)!=-1)
-    {
-      buffer[strlen(buffer)]='\0';
-      aux=(PEDIDO *)buffer;
-      addlist(aux,p);
-      printf("%s\n%d\n%s\n",aux->pedido,aux->precio,aux->usuario);
-    }
+    read(fd[0],buffer,TAM);
+    buffer[strlen(buffer)]='\0';
+    aux=(PEDIDO *)buffer;
+    addlist(aux,p);
+    printf("%s\n%d\n%s\n",aux->pedido,aux->precio,aux->usuario);
   }
 }

@@ -22,4 +22,5 @@ void listen_buffet(int *);
 void tostruct(char *,PEDIDO *);
 void addlist(PEDIDO *, PEDIDO *);
 void fail (int);
-
+int asciitocent(char *, PEDIDO *,int);
+int asciitodec(char *, PEDIDO *,int);
