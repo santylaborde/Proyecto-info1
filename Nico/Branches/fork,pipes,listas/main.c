@@ -1,26 +1,37 @@
 #include "header.h"
 int main(void)
 {
-  int fd[2];//,fp;
-  //FILE *fp;
-  PEDIDO *p='\0', *aux;
-  char buffer[TAM];
+  char c;
+  int pid1, pid2;
   
-  fail(pipe(fd));
+  mkfifo(FIFO,mode);
   
-  if(!fork())
+  pid1=fork();
+  if(!pid1)
   { 
-    //proceso hijo
-    listen_buffet(fd);
+    //proceso hijo 1
+    listen_buffet();
   }
   //proceso padre
-  close(fd[1]);
+  pid2=fork();
+  if(!pid2)
+  {
+    //proceso hijo 2
+    mostrar_pedido();
+  }
+  //proceso padre
   while(1)
   {
-    read(fd[0],buffer,TAM);
-    buffer[strlen(buffer)]='\0';
-    aux=(PEDIDO *)buffer;
-    addlist(aux,p);
-    printf("%s\n%d\n%s\n",aux->pedido,aux->precio,aux->usuario);
+    /*cuando se ingrese f se acaba el programa*/
+    if(scanf("%c",&c))
+    {
+      if(c=='f')
+      {
+	kill(pid1,SIGKILL);
+	kill(pid2,SIGKILL);
+	exit(0);
+      }
+    }
   }
+  exit(EXIT_SUCCESS);
 }

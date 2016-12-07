@@ -1,56 +1,92 @@
+//agregar funcion de matar procesos hijos
 #include "header.h"
-void listen_buffet(int *fd)
+void listen_buffet(void)
 {
   char buffer[TAM];
-  PEDIDO *aux=NULL;
-  close(fd[0]);
-  printf("pedido:");
-  scanf("%s",buffer);
-  tostruct(buffer,aux);	//agarra el buffer y lo pasa a una struct del tipo PEDIDO
-  write(fd[1],(char *)aux,sizeof(char *));
-  printf("hola\n");
+  int w_fifo, r_fifo, numbytes;
+  
+  w_fifo = open(FIFO,O_WRONLY);
+  r_fifo = open(FIFO2,O_RDONLY);
+  while(1)
+  {
+    numbytes = read(r_fifo,buffer,TAM);
+    buffer[numbytes-1]='\0';
+    write(w_fifo,buffer,strlen(buffer)+1);
+  }
+  close(r_fifo);
+  close(w_fifo);
   exit(0);
 }
-void tostruct(char *buff,PEDIDO *h)
+
+void mostrar_pedido(void)
 {
-  int i,j,k=0;
+  int r_fifo, numbytes;
+  char buffer[TAM]; 
+  PEDIDO *inicio=NULL, *new, *aux=NULL;
+  
+  r_fifo = open(FIFO,O_RDONLY);
+  while(1)
+  {
+  numbytes = read(r_fifo,buffer,TAM);
+  buffer[numbytes]='\0';
+  new=(PEDIDO *)malloc(sizeof(PEDIDO));
+  tostruct(buffer,&new);
+  add_nodofinal(&inicio,new,&aux);
+  system("clear");
+  ver_lista(inicio);
+  }
+
+  close(r_fifo);
+  exit(0);
+}
+
+void tostruct(char *buff,PEDIDO **new)
+{
+  int i, j, k=0, len=0;
   char aux[TAM];
-  h=(PEDIDO *)malloc(sizeof(PEDIDO));
-  /*separo el producto del pedido*/
-  for(i=k,j=0;buff[i]!='.';i++,j++,k=i)
-    aux[j]=buff[i];
-  aux[j]='\0';
-  h->pedido=(char *)malloc(sizeof(aux));
-  strcpy(h->pedido,aux);
-  k++;
-  /*separo el precio del pedido*/
-  for(j=k;buff[j]!='.';j++);
-  j-=k;
-  if(j==3)
-    k=asciitocent(buff,h,k);
-  if(j==2)
-    k=asciitodec(buff,h,k);
-  k++;
-  /*separo el usuario que hizo el pedido*/
-  for(i=k,j=0;buff[i]!='.';i++,j++)
-    aux[j]=buff[i];
-  aux[j]='\0';
-  h->usuario=(char *)malloc(sizeof(aux));
-  strcpy(h->usuario,aux);
+  void (* opcion[4])(char *, PEDIDO **)={pedido,precio,usuario,hora};
+  
+  for(i=0; buff[i] != '\0'; i++)
+  {
+    if(buff[i] == '.')
+      len++;
+  }
+  i=0;
+  while(k <= len && buff[i] != '\0')
+  {
+    /*Copio en un auxiliar una parte del buffer */
+    for(j=0; buff[i] != '.' && buff[i] != '\0'; i++, j++)
+      aux[j] = buff[i];
+    aux[j]='\0';
+    opcion[k](aux,new);
+    k++;
+    i++;
+  }
   return;
 }
-void addlist(PEDIDO *a,PEDIDO *b)
+/**
+ * @fn void add_nodofinal(TYPESTRUCT **, TYPESTRUCT *, TYPESTRUCT **);
+ * @details La funcion se encargara de agregar un nodo al final de una lista
+ * la cual se recibe por parametros.
+ * @param inicio Recibe el puntero de comienzo a la lista, si esta vacio lo carga
+ * con el nuevo nodo a agregar a la lista.
+ * @param new Contiene la direccion de memoria del nuevo nodo a agregar
+ * @param aux Es un auxiliar que sirve para enlazar la lista.
+ * @return void
+ * @author Nicolás M. Campos
+ * @date 15-11-16
+ */
+
+void add_nodofinal(TYPESTRUCT **inicio, TYPESTRUCT *new, TYPESTRUCT **aux)
 {
-  PEDIDO *last='\0';
-  a->next='\0';
-  if(b=='\0')
-    b=a;
+  new->next=NULL;
+  if(*inicio==NULL)
+    *inicio=new;
   else
-    last->next=a;
-  last=a;
-  return;
+    (*aux)->next=new;
+  *aux=new;
 }
-void fail (int fd)
+void fail(int fd)
 {
   char buffer[1024];
   if(fd==-1)
@@ -62,33 +98,69 @@ void fail (int fd)
     exit(1);
   }
 }
-int asciitocent(char *buff, PEDIDO *h,int i)
+/**
+ * @fn int precio(char *buff, PEDIDO **)
+ * @brief Convierte de una valor en ascii a un valor decimal. Solo para numeros sin coma.
+ * @details se necesita el string.h
+ * @param buff Puntero a la string que se quiere pasar a decimal
+ * @param new Puntero donde carga el precio en una estructura nueva
+ * @return El valor en decimal del string pasado por parametro. -1 en caso de error.
+ * @author Nicolás M. Campos
+ */
+void precio(char *buff, PEDIDO **new)
 {
-  int aux, k, j, r;
-  for(k=i,j=0;buff[k]!='.';k++,j++)
+  int aux, i, len, r=0, multiplicador=1;
+  len=strlen(buff);
+  for(i=1;i<len;i++)
+    multiplicador*=10;
+  for(i=0;buff[i]!='\0';i++)
   {
-    aux=(buff[k]-'0');
-    if(0==j)
-      r=aux*100;
-    if(1==j)
-      r+=aux*10;
-    if(2==j)
-      r+=aux;
-  }
-  h->precio=r;
-  return k;
-}
-int asciitodec(char *buff, PEDIDO *h,int i)
-{
-  int aux, k, j, r;
-  for(k=i,j=0;buff[k]!='.';k++,j++)
-  {
-    aux=(buff[k]-'0');
-    if(0==j)
-      r=aux*10;
+    aux=(buff[i]-'0');
+    if(aux <= 9 && aux >= 0)
+    {
+      r+=(aux*multiplicador);
+      multiplicador/=10;
+    }
     else
-      r+=aux;
+      fail(-1);
   }
-  h->precio=r;
-  return k;
+  (*new)->precio=r;
+  return;
+}
+
+void pedido(char *buff, PEDIDO **new)
+{
+  (*new)->pedido=(char *)malloc(strlen(buff)+1);
+  strcpy((*new)->pedido , buff);
+  return;
+}
+
+void usuario(char *buff, PEDIDO **new)
+{
+  (*new)->usuario=(char *)malloc(strlen(buff)+1);
+  strcpy((*new)->usuario , buff);
+  return;
+}
+
+void hora(char *buff, PEDIDO **new)
+{
+  strcpy((*new)->hora , buff);
+  return;
+}
+
+void handler(int s)
+{
+    while(wait(NULL)>0);
+}
+
+void ver_lista(PEDIDO *inicio)
+{
+  while(inicio != NULL)
+  {
+    printf("Pedido: %s\n",inicio->pedido);
+    printf("Precio $%d\n",inicio->precio);
+    printf("Usuario: %s\n",inicio->usuario);
+    printf("Hora de retiro: %s\n",inicio->hora);
+    inicio = inicio->next;
+  }
 }
