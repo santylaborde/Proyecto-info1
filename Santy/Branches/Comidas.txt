@@ -2,5 +2,5 @@ Bebidas Coca-Cola $25 #1 Sprite $20 #2 Fanta $20 #3 Agua $10 #4  Jugos $15 #5 FI
 Platos Milanesa $50 #11 Lomito $60 #12 Pollo $50 #13 Pescado $60 #14 FIN
 Postres Tortas $20 #21 Pastelitos $15 #22 Helado $20 #23 Frutas $10 #24 FIN
 Ensaladas Waldof $30 #31 Mixta $30 #32 Rusa $30 #33 Cesar $30 #34 FIN
-MenuEstudiantil Medallones de pollo con guarnicion $25 #41 FIN
-MenuDelDia Salteado de lomo con guarnicion $45 #42 FIN
+MenuEstudiantil MedallonesDePolloConGuarnicion $25 #41 FIN
+MenuDelDia SalteadoDeLomoConGuarnicion $45 #42 FIN
